@@ -1,1 +1,1 @@
-# test-auth-authorizatiin-grpc
+# test-auth-authorization-grpc
