@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/HernanSarmiento/test-auth-authorization-grpc/internal/models"
+	"github.com/HernanSarmiento/test-auth-authorization-grpc/user-service/internal/models"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"gorm.io/gorm"
 )
