@@ -5,14 +5,15 @@ import (
 	"log"
 
 	pb "github.com/HernanSarmiento/test-auth-authorization-grpc/api/proto/gen/user"
-	"github.com/HernanSarmiento/test-auth-authorization-grpc/internal/models"
-	"github.com/HernanSarmiento/test-auth-authorization-grpc/internal/repository"
+	"github.com/HernanSarmiento/test-auth-authorization-grpc/user-service/internal/models"
+	"github.com/HernanSarmiento/test-auth-authorization-grpc/user-service/internal/repository"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type UserHandler struct {
+	pb.UnimplementedUserServiceServer
 	repo repository.UserRepository
 }
 
@@ -56,7 +57,7 @@ func (u *UserHandler) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 			Id:       user.UserID.String(),
 			Username: user.Username,
 			Email:    user.Email,
-		},
+		}, Message: "Success: User created",
 	}, nil
 
 }
