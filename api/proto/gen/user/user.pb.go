@@ -9,6 +9,7 @@ package user
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -284,6 +285,7 @@ func (x *GetUserResponse) GetUser() *User {
 type UpdateUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	FieldMask     *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=field_mask,json=fieldMask,proto3" json:"field_mask,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -323,6 +325,13 @@ func (x *UpdateUserRequest) GetId() string {
 		return x.Id
 	}
 	return ""
+}
+
+func (x *UpdateUserRequest) GetFieldMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.FieldMask
+	}
+	return nil
 }
 
 type UpdateUserResponse struct {
@@ -469,7 +478,7 @@ var File_user_user_proto protoreflect.FileDescriptor
 
 const file_user_user_proto_rawDesc = "" +
 	"\n" +
-	"\x0fuser/user.proto\x12\x04user\"H\n" +
+	"\x0fuser/user.proto\x12\x04user\x1a google/protobuf/field_mask.proto\"H\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x14\n" +
@@ -486,9 +495,11 @@ const file_user_user_proto_rawDesc = "" +
 	"\x05email\x18\x01 \x01(\tR\x05email\"1\n" +
 	"\x0fGetUserResponse\x12\x1e\n" +
 	"\x04user\x18\x01 \x01(\v2\n" +
-	".user.UserR\x04user\"#\n" +
+	".user.UserR\x04user\"^\n" +
 	"\x11UpdateUserRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x129\n" +
+	"\n" +
+	"field_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\tfieldMask\"4\n" +
 	"\x12UpdateUserResponse\x12\x1e\n" +
 	"\x04user\x18\x01 \x01(\v2\n" +
 	".user.UserR\x04user\"#\n" +
@@ -520,33 +531,35 @@ func file_user_user_proto_rawDescGZIP() []byte {
 
 var file_user_user_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_user_user_proto_goTypes = []any{
-	(*User)(nil),               // 0: user.User
-	(*CreateUserRequest)(nil),  // 1: user.CreateUserRequest
-	(*CreateUserResponse)(nil), // 2: user.CreateUserResponse
-	(*GetUserRequest)(nil),     // 3: user.GetUserRequest
-	(*GetUserResponse)(nil),    // 4: user.GetUserResponse
-	(*UpdateUserRequest)(nil),  // 5: user.UpdateUserRequest
-	(*UpdateUserResponse)(nil), // 6: user.UpdateUserResponse
-	(*DeleteUserRequest)(nil),  // 7: user.DeleteUserRequest
-	(*DeleteUserResponse)(nil), // 8: user.DeleteUserResponse
+	(*User)(nil),                  // 0: user.User
+	(*CreateUserRequest)(nil),     // 1: user.CreateUserRequest
+	(*CreateUserResponse)(nil),    // 2: user.CreateUserResponse
+	(*GetUserRequest)(nil),        // 3: user.GetUserRequest
+	(*GetUserResponse)(nil),       // 4: user.GetUserResponse
+	(*UpdateUserRequest)(nil),     // 5: user.UpdateUserRequest
+	(*UpdateUserResponse)(nil),    // 6: user.UpdateUserResponse
+	(*DeleteUserRequest)(nil),     // 7: user.DeleteUserRequest
+	(*DeleteUserResponse)(nil),    // 8: user.DeleteUserResponse
+	(*fieldmaskpb.FieldMask)(nil), // 9: google.protobuf.FieldMask
 }
 var file_user_user_proto_depIdxs = []int32{
 	0, // 0: user.CreateUserResponse.user:type_name -> user.User
 	0, // 1: user.GetUserResponse.user:type_name -> user.User
-	0, // 2: user.UpdateUserResponse.user:type_name -> user.User
-	1, // 3: user.UserService.CreateUser:input_type -> user.CreateUserRequest
-	3, // 4: user.UserService.GetUser:input_type -> user.GetUserRequest
-	5, // 5: user.UserService.UpdateUser:input_type -> user.UpdateUserRequest
-	7, // 6: user.UserService.DeleteUser:input_type -> user.DeleteUserRequest
-	2, // 7: user.UserService.CreateUser:output_type -> user.CreateUserResponse
-	4, // 8: user.UserService.GetUser:output_type -> user.GetUserResponse
-	6, // 9: user.UserService.UpdateUser:output_type -> user.UpdateUserResponse
-	8, // 10: user.UserService.DeleteUser:output_type -> user.DeleteUserResponse
-	7, // [7:11] is the sub-list for method output_type
-	3, // [3:7] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	9, // 2: user.UpdateUserRequest.field_mask:type_name -> google.protobuf.FieldMask
+	0, // 3: user.UpdateUserResponse.user:type_name -> user.User
+	1, // 4: user.UserService.CreateUser:input_type -> user.CreateUserRequest
+	3, // 5: user.UserService.GetUser:input_type -> user.GetUserRequest
+	5, // 6: user.UserService.UpdateUser:input_type -> user.UpdateUserRequest
+	7, // 7: user.UserService.DeleteUser:input_type -> user.DeleteUserRequest
+	2, // 8: user.UserService.CreateUser:output_type -> user.CreateUserResponse
+	4, // 9: user.UserService.GetUser:output_type -> user.GetUserResponse
+	6, // 10: user.UserService.UpdateUser:output_type -> user.UpdateUserResponse
+	8, // 11: user.UserService.DeleteUser:output_type -> user.DeleteUserResponse
+	8, // [8:12] is the sub-list for method output_type
+	4, // [4:8] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_user_user_proto_init() }
