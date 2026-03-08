@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"gorm.io/gorm"
 )
 
 type BlogHandler struct {
@@ -41,10 +43,32 @@ func (p *BlogHandler) CreatePost(ctx context.Context, req *pb.CreatePostRequest)
 
 	return &pb.CreatePostResponse{
 		Post: &pb.Post{
-			Id:        post.PostID.String(),
+			PostId:    post.PostID.String(),
 			Title:     post.Title,
 			Body:      post.Body,
 			CreatedAt: timestamppb.New(now),
 		},
 	}, nil
+}
+func (p *BlogHandler) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb.GetPostResponse, error) {
+	if req.GetPostId() == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument: missing postid")
+	}
+	post, err := p.repo.GetPost(ctx, req.GetPostId())
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, status.Errorf(codes.NotFound, "Error: post not found or doesn't exist %s", err)
+		}
+		return nil, status.Errorf(codes.Internal, "Error has occur while communicating with db", err)
+	}
+
+	return &pb.GetPostResponse{
+		Post: &pb.Post{
+			PostId:    post.PostID.String(),
+			Title:     post.Title,
+			Body:      post.Title,
+			CreatedAt: timestamppb.New(post.CreatedAt),
+		},
+	}, nil
+
 }
