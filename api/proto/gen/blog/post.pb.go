@@ -338,6 +338,8 @@ func (x *GetAllPostRequest) GetResultPerPage() int32 {
 type GetAllPostResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Post          []*Post                `protobuf:"bytes,1,rep,name=post,proto3" json:"post,omitempty"`
+	TotalResults  int64                  `protobuf:"varint,2,opt,name=total_results,json=totalResults,proto3" json:"total_results,omitempty"`
+	TotalPages    int32                  `protobuf:"varint,3,opt,name=total_pages,json=totalPages,proto3" json:"total_pages,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -377,6 +379,20 @@ func (x *GetAllPostResponse) GetPost() []*Post {
 		return x.Post
 	}
 	return nil
+}
+
+func (x *GetAllPostResponse) GetTotalResults() int64 {
+	if x != nil {
+		return x.TotalResults
+	}
+	return 0
+}
+
+func (x *GetAllPostResponse) GetTotalPages() int32 {
+	if x != nil {
+		return x.TotalPages
+	}
+	return 0
 }
 
 type UpdatePostRequest struct {
@@ -614,10 +630,13 @@ const file_blog_post_proto_rawDesc = "" +
 	"\x11GetAllPostRequest\x12\x1f\n" +
 	"\vpage_number\x18\x01 \x01(\x05R\n" +
 	"pageNumber\x12&\n" +
-	"\x0fresult_per_page\x18\x02 \x01(\x05R\rresultPerPage\"4\n" +
+	"\x0fresult_per_page\x18\x02 \x01(\x05R\rresultPerPage\"z\n" +
 	"\x12GetAllPostResponse\x12\x1e\n" +
 	"\x04post\x18\x01 \x03(\v2\n" +
-	".blog.PostR\x04post\"\x87\x01\n" +
+	".blog.PostR\x04post\x12#\n" +
+	"\rtotal_results\x18\x02 \x01(\x03R\ftotalResults\x12\x1f\n" +
+	"\vtotal_pages\x18\x03 \x01(\x05R\n" +
+	"totalPages\"\x87\x01\n" +
 	"\x11UpdatePostRequest\x12\x16\n" +
 	"\x06postId\x18\x01 \x01(\tR\x06postId\x12\x1e\n" +
 	"\x04post\x18\x02 \x01(\v2\n" +
