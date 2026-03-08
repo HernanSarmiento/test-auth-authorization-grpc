@@ -9,6 +9,7 @@ import (
 	pb "github.com/HernanSarmiento/test-auth-authorization-grpc/api/proto/gen/blog"
 	"github.com/HernanSarmiento/test-auth-authorization-grpc/blog-service/internal/models"
 	"github.com/HernanSarmiento/test-auth-authorization-grpc/blog-service/internal/repository"
+	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -59,7 +60,7 @@ func (p *BlogHandler) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb.
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, status.Errorf(codes.NotFound, "Error: post not found or doesn't exist %s", err)
 		}
-		return nil, status.Errorf(codes.Internal, "Error has occur while communicating with db", err)
+		return nil, status.Errorf(codes.Internal, "Error has occur while communicating with db %s", err)
 	}
 
 	return &pb.GetPostResponse{
@@ -113,5 +114,55 @@ func (p *BlogHandler) GetAllPosts(ctx context.Context, req *pb.GetAllPostRequest
 		Post:         protoPosts,
 		TotalResults: totalResults,
 		TotalPages:   totalPages,
+	}, nil
+}
+func (p *BlogHandler) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest) (*pb.UpdatePostResponse, error) {
+
+	if req.GetPostId() == "" {
+		return nil, status.Error(codes.InvalidArgument, "Error: id cannot be empty")
+	}
+
+	postUpdate := models.Post{
+		Title: req.Post.GetTitle(),
+		Body:  req.Post.GetBody(),
+	}
+
+	pID, err := uuid.Parse(req.GetPost().GetPostId())
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "Error:Wrong id format %v", err)
+	}
+	postUpdate.PostID = pID
+
+	err = p.repo.UpdatePost(ctx, &postUpdate, req.GetUpdateMask())
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, status.Errorf(codes.NotFound, "Error: Couldn't find the post %s ", req.GetPost().GetPostId())
+		}
+		return nil, status.Errorf(codes.Internal, "Error: Couldn't update post %v", err)
+	}
+
+	return &pb.UpdatePostResponse{
+		Post: &pb.Post{
+			PostId: postUpdate.PostID.String(),
+			Title:  postUpdate.Title,
+			Body:   postUpdate.Body,
+		},
+	}, nil
+}
+func (p *BlogHandler) DeletePost(ctx context.Context, req *pb.DeletePostRequest) (*pb.DeletePostResponse, error) {
+	if req.GetPostId() == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "Error:postid field cannot be empty")
+	}
+
+	err := p.repo.DeletePost(ctx, req.GetPostId())
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, status.Errorf(codes.NotFound, "Error: Couldn't find post with id %s", req.GetPostId())
+		}
+		return nil, status.Errorf(codes.Internal, "Error:Coudln't delete requested post %v", err)
+	}
+	return &pb.DeletePostResponse{
+		PostId:  req.GetPostId(),
+		Message: "Post deleted successfully",
 	}, nil
 }
