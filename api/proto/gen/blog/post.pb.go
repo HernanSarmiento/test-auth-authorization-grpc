@@ -25,7 +25,7 @@ const (
 
 type Post struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	PostId        string                 `protobuf:"bytes,1,opt,name=postId,proto3" json:"postId,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	Body          string                 `protobuf:"bytes,3,opt,name=body,proto3" json:"body,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
@@ -63,9 +63,9 @@ func (*Post) Descriptor() ([]byte, []int) {
 	return file_blog_post_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Post) GetId() string {
+func (x *Post) GetPostId() string {
 	if x != nil {
-		return x.Id
+		return x.PostId
 	}
 	return ""
 }
@@ -197,7 +197,7 @@ func (x *CreatePostResponse) GetPost() *Post {
 
 type GetPostRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	PostId        string                 `protobuf:"bytes,1,opt,name=postId,proto3" json:"postId,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -232,9 +232,9 @@ func (*GetPostRequest) Descriptor() ([]byte, []int) {
 	return file_blog_post_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *GetPostRequest) GetId() string {
+func (x *GetPostRequest) GetPostId() string {
 	if x != nil {
-		return x.Id
+		return x.PostId
 	}
 	return ""
 }
@@ -381,7 +381,7 @@ func (x *GetAllPostResponse) GetPost() []*Post {
 
 type UpdatePostRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	PostId        string                 `protobuf:"bytes,1,opt,name=postId,proto3" json:"postId,omitempty"`
 	Post          *Post                  `protobuf:"bytes,2,opt,name=post,proto3" json:"post,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=updateMask,proto3" json:"updateMask,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -418,9 +418,9 @@ func (*UpdatePostRequest) Descriptor() ([]byte, []int) {
 	return file_blog_post_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *UpdatePostRequest) GetId() string {
+func (x *UpdatePostRequest) GetPostId() string {
 	if x != nil {
-		return x.Id
+		return x.PostId
 	}
 	return ""
 }
@@ -493,7 +493,7 @@ func (x *UpdatePostResponse) GetMessage() string {
 
 type DeletePostRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	PostId        string                 `protobuf:"bytes,1,opt,name=postId,proto3" json:"postId,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -528,16 +528,16 @@ func (*DeletePostRequest) Descriptor() ([]byte, []int) {
 	return file_blog_post_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *DeletePostRequest) GetId() string {
+func (x *DeletePostRequest) GetPostId() string {
 	if x != nil {
-		return x.Id
+		return x.PostId
 	}
 	return ""
 }
 
 type DeletePostResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	PostId        string                 `protobuf:"bytes,1,opt,name=postId,proto3" json:"postId,omitempty"`
 	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -573,9 +573,9 @@ func (*DeletePostResponse) Descriptor() ([]byte, []int) {
 	return file_blog_post_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *DeletePostResponse) GetId() string {
+func (x *DeletePostResponse) GetPostId() string {
 	if x != nil {
-		return x.Id
+		return x.PostId
 	}
 	return ""
 }
@@ -591,9 +591,9 @@ var File_blog_post_proto protoreflect.FileDescriptor
 
 const file_blog_post_proto_rawDesc = "" +
 	"\n" +
-	"\x0fblog/post.proto\x12\x04blog\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"{\n" +
-	"\x04Post\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
+	"\x0fblog/post.proto\x12\x04blog\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x83\x01\n" +
+	"\x04Post\x12\x16\n" +
+	"\x06postId\x18\x01 \x01(\tR\x06postId\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x12\n" +
 	"\x04body\x18\x03 \x01(\tR\x04body\x129\n" +
 	"\n" +
@@ -605,9 +605,9 @@ const file_blog_post_proto_rawDesc = "" +
 	"created_at\x18\x03 \x01(\tR\tcreatedAt\"4\n" +
 	"\x12CreatePostResponse\x12\x1e\n" +
 	"\x04post\x18\x01 \x01(\v2\n" +
-	".blog.PostR\x04post\" \n" +
-	"\x0eGetPostRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"1\n" +
+	".blog.PostR\x04post\"(\n" +
+	"\x0eGetPostRequest\x12\x16\n" +
+	"\x06postId\x18\x01 \x01(\tR\x06postId\"1\n" +
 	"\x0fGetPostResponse\x12\x1e\n" +
 	"\x04post\x18\x01 \x01(\v2\n" +
 	".blog.PostR\x04post\"\\\n" +
@@ -617,9 +617,9 @@ const file_blog_post_proto_rawDesc = "" +
 	"\x0fresult_per_page\x18\x02 \x01(\x05R\rresultPerPage\"4\n" +
 	"\x12GetAllPostResponse\x12\x1e\n" +
 	"\x04post\x18\x01 \x03(\v2\n" +
-	".blog.PostR\x04post\"\x7f\n" +
-	"\x11UpdatePostRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1e\n" +
+	".blog.PostR\x04post\"\x87\x01\n" +
+	"\x11UpdatePostRequest\x12\x16\n" +
+	"\x06postId\x18\x01 \x01(\tR\x06postId\x12\x1e\n" +
 	"\x04post\x18\x02 \x01(\v2\n" +
 	".blog.PostR\x04post\x12:\n" +
 	"\n" +
@@ -628,11 +628,11 @@ const file_blog_post_proto_rawDesc = "" +
 	"\x12UpdatePostResponse\x12\x1e\n" +
 	"\x04post\x18\x01 \x01(\v2\n" +
 	".blog.PostR\x04post\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"#\n" +
-	"\x11DeletePostRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\">\n" +
-	"\x12DeletePostResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"+\n" +
+	"\x11DeletePostRequest\x12\x16\n" +
+	"\x06postId\x18\x01 \x01(\tR\x06postId\"F\n" +
+	"\x12DeletePostResponse\x12\x16\n" +
+	"\x06postId\x18\x01 \x01(\tR\x06postId\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage2\xc9\x02\n" +
 	"\vBlogService\x12?\n" +
 	"\n" +
