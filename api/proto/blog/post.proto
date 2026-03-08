@@ -44,6 +44,8 @@ message GetAllPostRequest{
 
 message GetAllPostResponse{
     repeated Post post = 1;
+    int64 total_results = 2;
+    int32 total_pages = 3;
 }
 
 message UpdatePostRequest{
