@@ -14,7 +14,7 @@ service BlogService{
 }
 
 message Post{
-    string id = 1;
+    string postId = 1;
     string title = 2;
     string body = 3;
     google.protobuf.Timestamp created_at = 4;
@@ -31,7 +31,7 @@ message CreatePostResponse{
 }
 
 message GetPostRequest{
-    string id = 1;
+    string postId = 1;
 }
 
 message GetPostResponse{
@@ -47,7 +47,7 @@ message GetAllPostResponse{
 }
 
 message UpdatePostRequest{
-    string id = 1;
+    string postId = 1;
     Post post = 2;
     google.protobuf.FieldMask updateMask = 3;
 }
@@ -58,11 +58,11 @@ message UpdatePostResponse{
 }
 
 message DeletePostRequest{
-    string id = 1;
+    string postId = 1;
 }
 
 message DeletePostResponse{
-    string id = 1;
+    string postId = 1;
     string message = 2;
 }
 
