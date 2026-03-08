@@ -72,3 +72,46 @@ func (p *BlogHandler) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb.
 	}, nil
 
 }
+func (p *BlogHandler) GetAllPosts(ctx context.Context, req *pb.GetAllPostRequest) (*pb.GetAllPostResponse, error) {
+	limit := int(req.GetResultPerPage())
+
+	if limit <= 0 {
+		limit = 12
+	}
+
+	page := int(req.GetPageNumber())
+	if page <= 0 {
+		page = 1
+	}
+
+	offset := (page - 1) * limit
+
+	totalResults, err := p.repo.CountPost(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Error while counting post %s", err)
+	}
+
+	postsDB, err := p.repo.GetAllPosts(ctx, limit, offset)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Error: Couldn't fetch posts from db %s", err)
+	}
+
+	totalPages := int32(totalResults + int64(limit) - 1/int64(limit))
+
+	var protoPosts []*pb.Post
+
+	for _, p := range postsDB {
+		protoPosts = append(protoPosts, &pb.Post{
+			PostId:    p.PostID.String(),
+			Title:     p.Title,
+			Body:      p.Body,
+			CreatedAt: timestamppb.New(p.CreatedAt),
+		})
+	}
+
+	return &pb.GetAllPostResponse{
+		Post:         protoPosts,
+		TotalResults: totalResults,
+		TotalPages:   totalPages,
+	}, nil
+}
