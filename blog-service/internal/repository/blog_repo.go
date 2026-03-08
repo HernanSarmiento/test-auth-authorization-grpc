@@ -9,6 +9,7 @@ import (
 )
 
 type BlogRepository interface {
+	CountPost(ctx context.Context) (int64, error)
 	CreatePost(ctx context.Context, post *models.Post) error
 	GetPost(ctx context.Context, postId string) (*models.Post, error)
 	GetAllPosts(ctx context.Context, limit int, offset int) ([]models.Post, error)
@@ -22,6 +23,15 @@ type PostgresRepo struct {
 
 func NewPostgresRepo(db *gorm.DB) BlogRepository {
 	return &PostgresRepo{db: db}
+}
+
+func (p *PostgresRepo) CountPost(ctx context.Context) (int64, error) {
+	var count int64
+
+	if err := p.db.WithContext(ctx).Model(models.Post{}).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
 }
 
 func (p *PostgresRepo) CreatePost(ctx context.Context, post *models.Post) error {
