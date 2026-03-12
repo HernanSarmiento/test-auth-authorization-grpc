@@ -1,0 +1,23 @@
+syntax = "proto3";
+package auth;
+option go_package = "github.com/HernanSarmiento/test-auth-authorization-grpc/api/proto/auth;auth";
+
+import "google/protobuf/timestamp.proto";
+
+service AuthService{
+    rpc Login (LoginRequest) returns (LoginResponse);
+    rpc LogOut (LogOutRequest) returns (LogOutResponse);
+
+}
+
+message LoginRequest{
+    string email = 1;
+    string password = 2;
+}
+message LoginResponse{
+    string user_id = 1;
+    string token = 2;
+    google.protobuf.Timestamp expired_at = 3;
+}
+message LogOutRequest{}
+message LogOutResponse{}
