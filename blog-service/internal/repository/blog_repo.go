@@ -72,5 +72,12 @@ func (p *PostgresRepo) UpdatePost(ctx context.Context, post *models.Post, fieldM
 		Updates(post).Error
 }
 func (p *PostgresRepo) DeletePost(ctx context.Context, postId string) error {
-	return p.db.WithContext(ctx).Delete(models.Post{}, "post_id = ?", postId).Error
+	result := p.db.WithContext(ctx).Delete(models.Post{}, "post_id = ?", postId)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
 }
