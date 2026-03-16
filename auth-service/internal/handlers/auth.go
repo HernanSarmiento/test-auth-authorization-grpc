@@ -6,6 +6,9 @@ import (
 	authpb "github.com/HernanSarmiento/test-auth-authorization-grpc/api/proto/gen/auth"
 	userpb "github.com/HernanSarmiento/test-auth-authorization-grpc/api/proto/gen/user"
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type AuthInterface interface {
@@ -24,4 +27,12 @@ type JWToken struct {
 	key []byte
 	t   *jwt.Token
 	s   string
+}
+
+func ComparePasswordHash(hashedPassword []byte, password []byte) error {
+	err := bcrypt.CompareHashAndPassword(hashedPassword, password)
+	if err != nil {
+		return status.Errorf(codes.Unauthenticated, "Error: password hashes does not coincide with submitted password %v", err)
+	}
+	return nil
 }
