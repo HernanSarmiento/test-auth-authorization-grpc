@@ -10,7 +10,7 @@ import (
 
 type UserRepository interface {
 	Create(ctx context.Context, user *models.User) error
-	Get(ctx context.Context, userId string) (*models.User, error)
+	Get(ctx context.Context, email string) (*models.User, error)
 	Update(ctx context.Context, user *models.User, fieldMask *fieldmaskpb.FieldMask) error
 	Delete(ctx context.Context, userId string) error
 }
@@ -27,9 +27,9 @@ func (r *postgresRepo) Create(ctx context.Context, user *models.User) error {
 	return r.db.WithContext(ctx).Create(user).Error
 }
 
-func (r *postgresRepo) Get(ctx context.Context, userId string) (*models.User, error) {
+func (r *postgresRepo) Get(ctx context.Context, email string) (*models.User, error) {
 	var user models.User
-	err := r.db.WithContext(ctx).First(&user, "user_id = ?", userId).Error
+	err := r.db.WithContext(ctx).First(&user, "email = ?", email).Error
 	if err != nil {
 		return nil, err
 	}
