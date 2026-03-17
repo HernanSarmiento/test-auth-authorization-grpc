@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"errors"
 	"log"
 
 	pb "github.com/HernanSarmiento/test-auth-authorization-grpc/api/proto/gen/user"
@@ -10,6 +11,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
 )
 
 type UserHandler struct {
@@ -31,7 +33,7 @@ func HashPassword(password string) (string, error) {
 
 func (u *UserHandler) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (res *pb.CreateUserResponse, err error) {
 	if req.GetUsername() == "" || req.Email == "" || req.Password == "" {
-		log.Printf("Invalid Argument: All fields must be completed %s", err)
+		log.Printf("Invalid Argument: All fields must be completed")
 		return nil, status.Errorf(codes.InvalidArgument, "Invalid Argument: All fields must be completed")
 	}
 
@@ -54,10 +56,30 @@ func (u *UserHandler) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 
 	return &pb.CreateUserResponse{
 		User: &pb.User{
-			Id:       user.UserID.String(),
+			UserId:   user.UserID.String(),
 			Username: user.Username,
 			Email:    user.Email,
+			Role:     string(user.Role),
 		}, Message: "Success: User created",
+	}, nil
+
+}
+func (u *UserHandler) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.UserCredentialsResponse, error) {
+	if req.GetEmail() == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "Error: Email field must be provided")
+	}
+	userFound, err := u.repo.Get(ctx, req.GetEmail())
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, status.Errorf(codes.NotFound, "Error: couldn't find user with email %s %v", req.GetEmail(), err)
+		}
+		return nil, status.Errorf(codes.Internal, "Error: couldn't parse users registry")
+	}
+
+	return &pb.UserCredentialsResponse{
+		UserId:       userFound.UserID.String(),
+		Email:        userFound.Email,
+		HashPassword: userFound.Password,
 	}, nil
 
 }
