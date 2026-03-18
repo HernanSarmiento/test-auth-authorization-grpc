@@ -80,6 +80,7 @@ func (u *UserHandler) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.
 		UserId:       userFound.UserID.String(),
 		Email:        userFound.Email,
 		HashPassword: userFound.Password,
+		Role:         string(userFound.Role),
 	}, nil
 
 }
