@@ -114,3 +114,21 @@ func (u *UserHandler) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest)
 		Message: "User update successfully",
 	}, nil
 }
+func (u *UserHandler) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
+	if req.GetUserId() == "" {
+		return nil, status.Error(codes.InvalidArgument, "Error: user_id is required")
+	}
+
+	rows, err := u.repo.Delete(ctx, req.GetUserId())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Error: coudln't parse user registry")
+	}
+	if rows == 0 {
+		return nil, status.Errorf(codes.NotFound, "Error: user with id %s not found", req.GetUserId())
+	}
+
+	return &pb.DeleteUserResponse{
+		UserId:  req.GetUserId(),
+		Message: "user deleted",
+	}, nil
+}
