@@ -360,8 +360,9 @@ func (x *GetUserResponse) GetUser() *User {
 
 type UpdateUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	FieldMask     *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=field_mask,json=fieldMask,proto3" json:"field_mask,omitempty"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	User          *User                  `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
+	FieldMask     *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=field_mask,json=fieldMask,proto3" json:"field_mask,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -396,11 +397,18 @@ func (*UpdateUserRequest) Descriptor() ([]byte, []int) {
 	return file_user_user_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *UpdateUserRequest) GetId() string {
+func (x *UpdateUserRequest) GetUserId() string {
 	if x != nil {
-		return x.Id
+		return x.UserId
 	}
 	return ""
+}
+
+func (x *UpdateUserRequest) GetUser() *User {
+	if x != nil {
+		return x.User
+	}
+	return nil
 }
 
 func (x *UpdateUserRequest) GetFieldMask() *fieldmaskpb.FieldMask {
@@ -412,7 +420,7 @@ func (x *UpdateUserRequest) GetFieldMask() *fieldmaskpb.FieldMask {
 
 type UpdateUserResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -447,11 +455,11 @@ func (*UpdateUserResponse) Descriptor() ([]byte, []int) {
 	return file_user_user_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *UpdateUserResponse) GetUser() *User {
+func (x *UpdateUserResponse) GetMessage() string {
 	if x != nil {
-		return x.User
+		return x.Message
 	}
-	return nil
+	return ""
 }
 
 type DeleteUserRequest struct {
@@ -577,14 +585,15 @@ const file_user_user_proto_rawDesc = "" +
 	"\rhash_password\x18\x04 \x01(\tR\fhashPassword\"1\n" +
 	"\x0fGetUserResponse\x12\x1e\n" +
 	"\x04user\x18\x01 \x01(\v2\n" +
-	".user.UserR\x04user\"^\n" +
-	"\x11UpdateUserRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x129\n" +
+	".user.UserR\x04user\"\x87\x01\n" +
+	"\x11UpdateUserRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1e\n" +
+	"\x04user\x18\x02 \x01(\v2\n" +
+	".user.UserR\x04user\x129\n" +
 	"\n" +
-	"field_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\tfieldMask\"4\n" +
-	"\x12UpdateUserResponse\x12\x1e\n" +
-	"\x04user\x18\x01 \x01(\v2\n" +
-	".user.UserR\x04user\"#\n" +
+	"field_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\tfieldMask\".\n" +
+	"\x12UpdateUserResponse\x12\x18\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\"#\n" +
 	"\x11DeleteUserRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\">\n" +
 	"\x12DeleteUserResponse\x12\x0e\n" +
@@ -628,8 +637,8 @@ var file_user_user_proto_goTypes = []any{
 var file_user_user_proto_depIdxs = []int32{
 	0,  // 0: user.CreateUserResponse.user:type_name -> user.User
 	0,  // 1: user.GetUserResponse.user:type_name -> user.User
-	10, // 2: user.UpdateUserRequest.field_mask:type_name -> google.protobuf.FieldMask
-	0,  // 3: user.UpdateUserResponse.user:type_name -> user.User
+	0,  // 2: user.UpdateUserRequest.user:type_name -> user.User
+	10, // 3: user.UpdateUserRequest.field_mask:type_name -> google.protobuf.FieldMask
 	1,  // 4: user.UserService.CreateUser:input_type -> user.CreateUserRequest
 	3,  // 5: user.UserService.GetUser:input_type -> user.GetUserRequest
 	6,  // 6: user.UserService.UpdateUser:input_type -> user.UpdateUserRequest
