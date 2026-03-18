@@ -68,7 +68,7 @@ func (u *UserHandler) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.
 	if req.GetEmail() == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "Error: Email field must be provided")
 	}
-	userFound, err := u.repo.Get(ctx, req.GetEmail())
+	userFound, err := u.repo.GetByEmail(ctx, req.GetEmail())
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, status.Errorf(codes.NotFound, "Error: couldn't find user with email %s %v", req.GetEmail(), err)
@@ -82,4 +82,35 @@ func (u *UserHandler) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.
 		HashPassword: userFound.Password,
 	}, nil
 
+}
+func (u *UserHandler) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
+	if req.GetUserId() == "" {
+		return nil, status.Error(codes.InvalidArgument, "Error: user_id field cannot be empty")
+	}
+
+	if req.GetFieldMask() == nil || len(req.GetFieldMask().GetPaths()) == 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "Error:Update mask is required")
+	}
+
+	userFound, err := u.repo.GetByID(ctx, req.GetUserId())
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, status.Errorf(codes.NotFound, "Error: Coudln't find user with id %s, %v", req.GetUserId(), err)
+		}
+		return nil, status.Errorf(codes.Internal, "Error: Coudln't parse user registry error %s", err)
+	}
+
+	if req.GetUser() != nil {
+		userFound.Username = req.GetUser().Username
+		userFound.Email = req.GetUser().Email
+	}
+
+	err = u.repo.Update(ctx, userFound, req.GetFieldMask())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Error: couldn't update user info %v", err)
+	}
+
+	return &pb.UpdateUserResponse{
+		Message: "User update successfully",
+	}, nil
 }
