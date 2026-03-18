@@ -56,10 +56,10 @@ message UpdateUserResponse{
 }
 
 message DeleteUserRequest{
-    string id = 1;
+    string user_id = 1;
 }
 
 message DeleteUserResponse{
-    string id = 1;
+    string user_id = 1;
     string message = 2;
 }
