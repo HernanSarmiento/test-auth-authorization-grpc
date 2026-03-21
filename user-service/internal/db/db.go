@@ -17,7 +17,7 @@ func InitDB(cfg config.Config) *gorm.DB {
 		cfg.DB_HOST,
 		cfg.DB_USER,
 		cfg.DB_PASSWORD,
-		cfg.DB_NAME,
+		cfg.DB_NAME_USER,
 		cfg.DB_PORT)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
