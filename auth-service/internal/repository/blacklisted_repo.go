@@ -26,7 +26,7 @@ func NewRedisBlackListRepo(client *redis.Client) BlackListedToken {
 }
 
 func (r *redisBlackListRepo) Save(ctx context.Context, jti string, expiration time.Duration) error {
-	key := fmt.Sprintf("%s%s", r.prefix, jti)
+	key := fmt.Sprintf("%s:%s", r.prefix, jti)
 
 	err := r.client.Set(ctx, key, "1", expiration).Err()
 	if err != nil {
