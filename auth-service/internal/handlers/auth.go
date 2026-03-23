@@ -3,8 +3,12 @@ package handlers
 import (
 	"context"
 	"crypto/ecdsa"
+	"crypto/x509"
+	"encoding/pem"
+	"errors"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	authpb "github.com/HernanSarmiento/test-auth-authorization-grpc/api/proto/gen/auth"
@@ -12,6 +16,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -27,16 +32,16 @@ type AuthService struct {
 	privateKey *ecdsa.PrivateKey
 }
 
+type MyCustomsClaims struct {
+	Role string `json:"role"`
+	*jwt.RegisteredClaims
+}
+
 func NewAuthService(uc userpb.UserServiceClient, privKey *ecdsa.PrivateKey) *AuthService {
 	return &AuthService{
 		userClient: uc,
 		privateKey: privKey,
 	}
-}
-
-type JWToken struct {
-	Value     string    `json:"token"`
-	ExpiresAt time.Time `json:"expires_at"`
 }
 
 func ComparePasswordHash(hashedPassword []byte, password []byte) error {
@@ -57,6 +62,32 @@ func LoadPrivateKey(path string) (*ecdsa.PrivateKey, error) {
 		return nil, fmt.Errorf("Error occur while parsing private key %w", err)
 	}
 	return key, nil
+}
+
+func LoadPublicKey(path string) (*ecdsa.PublicKey, error) {
+	// 1. Leer el archivo físico (.pem)
+	asn1Data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("error leyendo llave pública: %w", err)
+	}
+
+	// 2. Decodificar el bloque PEM
+	block, _ := pem.Decode(asn1Data)
+	if block == nil || block.Type != "PUBLIC KEY" {
+		return nil, errors.New("formato de llave pública inválido")
+	}
+	// 3. Parsear el contenido PKIX (estándar para llaves públicas)
+	pub, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		return nil, fmt.Errorf("error parseando llave pública: %w", err)
+	}
+	// 4. Asegurarnos de que sea una llave ECDSA (la que elegimos para el proyecto)
+	ecdsaPub, ok := pub.(*ecdsa.PublicKey)
+	if !ok {
+		return nil, errors.New("la llave no es de tipo ECDSA")
+	}
+
+	return ecdsaPub, nil
 }
 
 func GenerateToken(userID, role string, privKey *ecdsa.PrivateKey, exp time.Time) (string, error) {
@@ -118,4 +149,32 @@ func (a *AuthService) Login(ctx context.Context, req *authpb.LoginRequest) (*aut
 		Role:      mapRoleToProto(user.Role),
 		ExpiredAt: timestamppb.New(expirationTime),
 	}, nil
+}
+
+func (a *AuthService) VerifyToken(ctx context.Context, pubKey *ecdsa.PublicKey) (*MyCustomsClaims, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Error(codes.Unauthenticated, "Error: no metadata")
+	}
+
+	values := md.Get("authorization")
+	if len(values) == 0 {
+		return nil, status.Error(codes.Unauthenticated, "Error: missing authorization header")
+	}
+
+	tokenString := strings.TrimPrefix(values[0], "bearer ")
+	claims := &MyCustomsClaims{}
+
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodECDSA); !ok {
+			return nil, fmt.Errorf("Error: unexpected method %v", t.Header["alg"])
+		}
+		return pubKey, nil
+	})
+
+	if err != nil || !token.Valid {
+		return nil, status.Error(codes.Unauthenticated, "Error: invalid token")
+	}
+
+	return claims, nil
 }
