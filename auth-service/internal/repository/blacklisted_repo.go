@@ -13,19 +13,19 @@ type BlackListedToken interface {
 	Exists(ctx context.Context, jti string) (bool, error)
 }
 
-type redisBlackListRepo struct {
+type RedisBlackListRepo struct {
 	client *redis.Client
 	prefix string
 }
 
 func NewRedisBlackListRepo(client *redis.Client) BlackListedToken {
-	return &redisBlackListRepo{
+	return &RedisBlackListRepo{
 		client: client,
 		prefix: "blacklist",
 	}
 }
 
-func (r *redisBlackListRepo) Save(ctx context.Context, jti string, expiration time.Duration) error {
+func (r *RedisBlackListRepo) Save(ctx context.Context, jti string, expiration time.Duration) error {
 	key := fmt.Sprintf("%s:%s", r.prefix, jti)
 
 	err := r.client.Set(ctx, key, "1", expiration).Err()
@@ -35,7 +35,7 @@ func (r *redisBlackListRepo) Save(ctx context.Context, jti string, expiration ti
 	return nil
 }
 
-func (r *redisBlackListRepo) Exists(ctx context.Context, jti string) (bool, error) {
+func (r *RedisBlackListRepo) Exists(ctx context.Context, jti string) (bool, error) {
 	key := fmt.Sprintf("%s%s", r.prefix, jti)
 
 	val, err := r.client.Exists(ctx, key).Result()
