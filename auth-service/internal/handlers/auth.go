@@ -13,6 +13,7 @@ import (
 
 	authpb "github.com/HernanSarmiento/test-auth-authorization-grpc/api/proto/gen/auth"
 	userpb "github.com/HernanSarmiento/test-auth-authorization-grpc/api/proto/gen/user"
+	"github.com/HernanSarmiento/test-auth-authorization-grpc/auth-service/internal/repository"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -31,6 +32,8 @@ type AuthService struct {
 	authpb.UnimplementedAuthServiceServer
 	userClient userpb.UserServiceClient
 	privateKey *ecdsa.PrivateKey
+	publicKey  *ecdsa.PublicKey
+	redisRepo  repository.RedisBlackListRepo
 }
 
 type MyCustomsClaims struct {
@@ -39,10 +42,12 @@ type MyCustomsClaims struct {
 	*jwt.RegisteredClaims
 }
 
-func NewAuthService(uc userpb.UserServiceClient, privKey *ecdsa.PrivateKey) *AuthService {
+func NewAuthService(uc userpb.UserServiceClient, privKey *ecdsa.PrivateKey, rd repository.RedisBlackListRepo, pubKey *ecdsa.PublicKey) *AuthService {
 	return &AuthService{
 		userClient: uc,
 		privateKey: privKey,
+		redisRepo:  rd,
+		publicKey:  pubKey,
 	}
 }
 
@@ -185,4 +190,23 @@ func (a *AuthService) VerifyToken(ctx context.Context, pubKey *ecdsa.PublicKey) 
 	}
 
 	return claims, nil
+}
+
+func (a *AuthService) LogOut(ctx context.Context, req *authpb.LogOutRequest) (*authpb.LogOutResponse, error) {
+
+	claims, err := a.VerifyToken(ctx, a.publicKey)
+	if err != nil {
+		return nil, err
+	}
+
+	jti := claims.ID
+
+	remainingTime := time.Until(claims.ExpiresAt.Time)
+
+	err = a.redisRepo.Save(ctx, jti, remainingTime)
+	if err != nil {
+		return nil, err
+	}
+
+	return &authpb.LogOutResponse{}, nil
 }
