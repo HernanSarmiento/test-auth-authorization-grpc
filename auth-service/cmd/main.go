@@ -8,6 +8,8 @@ import (
 	userpb "github.com/HernanSarmiento/test-auth-authorization-grpc/api/proto/gen/user"
 	"github.com/HernanSarmiento/test-auth-authorization-grpc/auth-service/internal/config"
 	"github.com/HernanSarmiento/test-auth-authorization-grpc/auth-service/internal/handlers"
+	repo "github.com/HernanSarmiento/test-auth-authorization-grpc/auth-service/internal/repository"
+	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
@@ -24,6 +26,10 @@ func main() {
 		log.Fatalf("Error while loading private key %v", err)
 	}
 
+	pubKey, err := handlers.LoadPublicKey(cfg.PublicKeyPath)
+	if err != nil {
+		log.Fatalf("Error while loading public key %v", err)
+	}
 	addr := ":" + cfg.AUTH_SERVER_PORT
 
 	lis, err := net.Listen("tcp", addr)
@@ -37,7 +43,13 @@ func main() {
 	defer userConn.Close()
 	userClient := userpb.NewUserServiceClient(userConn)
 
-	authService := handlers.NewAuthService(userClient, privKey)
+	rdb := redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+	})
+
+	redisRepo := repo.RedisBlackListRepo{Client: rdb}
+
+	authService := handlers.NewAuthService(userClient, privKey, redisRepo, pubKey)
 
 	grpcServer := grpc.NewServer()
 	authpb.RegisterAuthServiceServer(grpcServer, authService)
