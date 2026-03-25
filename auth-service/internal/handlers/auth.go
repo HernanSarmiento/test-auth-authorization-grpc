@@ -14,6 +14,7 @@ import (
 	authpb "github.com/HernanSarmiento/test-auth-authorization-grpc/api/proto/gen/auth"
 	userpb "github.com/HernanSarmiento/test-auth-authorization-grpc/api/proto/gen/user"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -33,7 +34,8 @@ type AuthService struct {
 }
 
 type MyCustomsClaims struct {
-	Role string `json:"role"`
+	UserID string `json:"user_id"`
+	Role   string `json:"role"`
 	*jwt.RegisteredClaims
 }
 
@@ -91,11 +93,17 @@ func LoadPublicKey(path string) (*ecdsa.PublicKey, error) {
 }
 
 func GenerateToken(userID, role string, privKey *ecdsa.PrivateKey, exp time.Time) (string, error) {
-	claims := jwt.MapClaims{
-		"sub":  userID,
-		"role": role,
-		"exp":  exp.Unix(),
-		"iat":  time.Now().Unix(),
+	id := uuid.NewString()
+
+	claims := MyCustomsClaims{
+		UserID: userID,
+		Role:   role,
+		RegisteredClaims: &jwt.RegisteredClaims{
+			ID:        id,
+			ExpiresAt: jwt.NewNumericDate(exp),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			Subject:   userID,
+		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
 	tokenString, err := token.SignedString(privKey)
