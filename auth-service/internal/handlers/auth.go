@@ -8,17 +8,16 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	authpb "github.com/HernanSarmiento/test-auth-authorization-grpc/api/proto/gen/auth"
 	userpb "github.com/HernanSarmiento/test-auth-authorization-grpc/api/proto/gen/user"
 	"github.com/HernanSarmiento/test-auth-authorization-grpc/auth-service/internal/repository"
+	"github.com/HernanSarmiento/test-auth-authorization-grpc/common/auth"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -34,12 +33,6 @@ type AuthService struct {
 	privateKey *ecdsa.PrivateKey
 	publicKey  *ecdsa.PublicKey
 	redisRepo  repository.RedisBlackListRepo
-}
-
-type MyCustomsClaims struct {
-	UserID string `json:"user_id"`
-	Role   string `json:"role"`
-	*jwt.RegisteredClaims
 }
 
 func NewAuthService(uc userpb.UserServiceClient, privKey *ecdsa.PrivateKey, rd repository.RedisBlackListRepo, pubKey *ecdsa.PublicKey) *AuthService {
@@ -100,7 +93,7 @@ func LoadPublicKey(path string) (*ecdsa.PublicKey, error) {
 func GenerateToken(userID, role string, privKey *ecdsa.PrivateKey, exp time.Time) (string, error) {
 	id := uuid.NewString()
 
-	claims := MyCustomsClaims{
+	claims := &auth.MyCustomsClaims{
 		UserID: userID,
 		Role:   role,
 		RegisteredClaims: &jwt.RegisteredClaims{
@@ -164,37 +157,9 @@ func (a *AuthService) Login(ctx context.Context, req *authpb.LoginRequest) (*aut
 	}, nil
 }
 
-func (a *AuthService) VerifyToken(ctx context.Context, pubKey *ecdsa.PublicKey) (*MyCustomsClaims, error) {
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.Unauthenticated, "Error: no metadata")
-	}
-
-	values := md.Get("authorization")
-	if len(values) == 0 {
-		return nil, status.Error(codes.Unauthenticated, "Error: missing authorization header")
-	}
-
-	tokenString := strings.TrimPrefix(values[0], "bearer ")
-	claims := &MyCustomsClaims{}
-
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
-		if _, ok := t.Method.(*jwt.SigningMethodECDSA); !ok {
-			return nil, fmt.Errorf("Error: unexpected method %v", t.Header["alg"])
-		}
-		return pubKey, nil
-	})
-
-	if err != nil || !token.Valid {
-		return nil, status.Error(codes.Unauthenticated, "Error: invalid token")
-	}
-
-	return claims, nil
-}
-
 func (a *AuthService) LogOut(ctx context.Context, req *authpb.LogOutRequest) (*authpb.LogOutResponse, error) {
 
-	claims, err := a.VerifyToken(ctx, a.publicKey)
+	claims, err := auth.VerifyToken(ctx, a.publicKey)
 	if err != nil {
 		return nil, err
 	}
