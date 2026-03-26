@@ -4,5 +4,6 @@ use (
 	./api
 	./auth-service
 	./blog-service
+	./common
 	./user-service
 )
