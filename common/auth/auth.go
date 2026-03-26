@@ -12,6 +12,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+type contextKey string
+
+const (
+	UserIDKey contextKey = "user_id"
+	RoleKey   contextKey = "user_role"
+)
+
 type MyCustomsClaims struct {
 	UserID string `json:"user_id"`
 	Role   string `json:"role"`
