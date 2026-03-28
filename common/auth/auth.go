@@ -15,13 +15,15 @@ import (
 type contextKey string
 
 const (
-	UserIDKey contextKey = "user_id"
-	RoleKey   contextKey = "user_role"
+	UserIDKey     contextKey = "user_id"
+	AuthorNameKey contextKey = "author_name"
+	RoleKey       contextKey = "user_role"
 )
 
 type MyCustomsClaims struct {
-	UserID string `json:"user_id"`
-	Role   string `json:"role"`
+	UserID     string `json:"user_id"`
+	AuthorName string `json:"author_name"`
+	Role       string `json:"role"`
 	*jwt.RegisteredClaims
 }
 
