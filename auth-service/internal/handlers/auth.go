@@ -90,12 +90,13 @@ func LoadPublicKey(path string) (*ecdsa.PublicKey, error) {
 	return ecdsaPub, nil
 }
 
-func GenerateToken(userID, role string, privKey *ecdsa.PrivateKey, exp time.Time) (string, error) {
+func GenerateToken(userID, role string, authorName string, privKey *ecdsa.PrivateKey, exp time.Time) (string, error) {
 	id := uuid.NewString()
 
 	claims := &auth.MyCustomsClaims{
-		UserID: userID,
-		Role:   role,
+		UserID:     userID,
+		Role:       role,
+		AuthorName: authorName,
 		RegisteredClaims: &jwt.RegisteredClaims{
 			ID:        id,
 			ExpiresAt: jwt.NewNumericDate(exp),
@@ -144,16 +145,17 @@ func (a *AuthService) Login(ctx context.Context, req *authpb.LoginRequest) (*aut
 
 	expirationTime := time.Now().Add(time.Hour * 24)
 
-	token, err := GenerateToken(user.UserId, user.Role, a.privateKey, expirationTime)
+	token, err := GenerateToken(user.UserId, user.Role, user.Username, a.privateKey, expirationTime)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Error while generating token %v", err)
 	}
 
 	return &authpb.LoginResponse{
-		UserId:    string(user.UserId),
-		Token:     token,
-		Role:      mapRoleToProto(user.Role),
-		ExpiredAt: timestamppb.New(expirationTime),
+		UserId:     string(user.UserId),
+		Token:      token,
+		AuthorName: user.Username,
+		Role:       mapRoleToProto(user.Role),
+		ExpiredAt:  timestamppb.New(expirationTime),
 	}, nil
 }
 
