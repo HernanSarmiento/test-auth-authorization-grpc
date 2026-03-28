@@ -124,8 +124,9 @@ type LoginResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Token         string                 `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
-	ExpiredAt     *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=expired_at,json=expiredAt,proto3" json:"expired_at,omitempty"`
-	Role          Role                   `protobuf:"varint,4,opt,name=role,proto3,enum=auth.Role" json:"role,omitempty"`
+	AuthorName    string                 `protobuf:"bytes,3,opt,name=author_name,json=authorName,proto3" json:"author_name,omitempty"`
+	ExpiredAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=expired_at,json=expiredAt,proto3" json:"expired_at,omitempty"`
+	Role          Role                   `protobuf:"varint,5,opt,name=role,proto3,enum=auth.Role" json:"role,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -170,6 +171,13 @@ func (x *LoginResponse) GetUserId() string {
 func (x *LoginResponse) GetToken() string {
 	if x != nil {
 		return x.Token
+	}
+	return ""
+}
+
+func (x *LoginResponse) GetAuthorName() string {
+	if x != nil {
+		return x.AuthorName
 	}
 	return ""
 }
@@ -267,13 +275,15 @@ const file_auth_auth_proto_rawDesc = "" +
 	"\x0fauth/auth.proto\x12\x04auth\x1a\x1fgoogle/protobuf/timestamp.proto\"@\n" +
 	"\fLoginRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"\x99\x01\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"\xba\x01\n" +
 	"\rLoginResponse\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x14\n" +
-	"\x05token\x18\x02 \x01(\tR\x05token\x129\n" +
+	"\x05token\x18\x02 \x01(\tR\x05token\x12\x1f\n" +
+	"\vauthor_name\x18\x03 \x01(\tR\n" +
+	"authorName\x129\n" +
 	"\n" +
-	"expired_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\texpiredAt\x12\x1e\n" +
-	"\x04role\x18\x04 \x01(\x0e2\n" +
+	"expired_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\texpiredAt\x12\x1e\n" +
+	"\x04role\x18\x05 \x01(\x0e2\n" +
 	".auth.RoleR\x04role\"\x0f\n" +
 	"\rLogOutRequest\"\x10\n" +
 	"\x0eLogOutResponse*%\n" +

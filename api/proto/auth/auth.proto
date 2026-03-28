@@ -22,8 +22,9 @@ message LoginRequest{
 message LoginResponse{
     string user_id = 1;
     string token = 2;
-    google.protobuf.Timestamp expired_at = 3;
-    Role role = 4;
+    string author_name =3;
+    google.protobuf.Timestamp expired_at = 4;
+    Role role = 5;
 }
 message LogOutRequest{}
 message LogOutResponse{}
