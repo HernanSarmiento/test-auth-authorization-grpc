@@ -16,8 +16,8 @@ func AuthInterceptor(pubKey *ecdsa.PublicKey) grpc.UnaryServerInterceptor {
 			return nil, err
 		}
 
-		newctx := context.WithValue(ctx, "user_id", claims.ID)
-		newCtx := context.WithValue(newctx, "user_role", claims.Role)
+		newctx := context.WithValue(ctx, auth.UserIDKey, claims.ID)
+		newCtx := context.WithValue(newctx, auth.RoleKey, auth.AuthorNameKey)
 
 		return handler(newCtx, req)
 	}
