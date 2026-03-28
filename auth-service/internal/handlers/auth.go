@@ -145,7 +145,7 @@ func (a *AuthService) Login(ctx context.Context, req *authpb.LoginRequest) (*aut
 
 	expirationTime := time.Now().Add(time.Hour * 24)
 
-	token, err := GenerateToken(user.UserId, user.Role, user.Username, a.privateKey, expirationTime)
+	token, err := GenerateToken(user.UserId, user.Role, user.AuthorName, a.privateKey, expirationTime)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Error while generating token %v", err)
 	}
@@ -153,7 +153,7 @@ func (a *AuthService) Login(ctx context.Context, req *authpb.LoginRequest) (*aut
 	return &authpb.LoginResponse{
 		UserId:     string(user.UserId),
 		Token:      token,
-		AuthorName: user.Username,
+		AuthorName: user.AuthorName,
 		Role:       mapRoleToProto(user.Role),
 		ExpiredAt:  timestamppb.New(expirationTime),
 	}, nil
