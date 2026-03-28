@@ -38,7 +38,8 @@ message UserCredentialsResponse{
     string user_id = 1;
     string email = 2;
     string role = 3;
-    string hash_password = 4;
+    string author_name = 4;
+    string hash_password = 5;
 }
 
 message GetUserResponse{
