@@ -28,7 +28,9 @@ type Post struct {
 	PostId        string                 `protobuf:"bytes,1,opt,name=postId,proto3" json:"postId,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	Body          string                 `protobuf:"bytes,3,opt,name=body,proto3" json:"body,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	AuthorId      string                 `protobuf:"bytes,4,opt,name=author_id,json=authorId,proto3" json:"author_id,omitempty"`
+	AuhorName     string                 `protobuf:"bytes,5,opt,name=auhor_name,json=auhorName,proto3" json:"auhor_name,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -84,6 +86,20 @@ func (x *Post) GetBody() string {
 	return ""
 }
 
+func (x *Post) GetAuthorId() string {
+	if x != nil {
+		return x.AuthorId
+	}
+	return ""
+}
+
+func (x *Post) GetAuhorName() string {
+	if x != nil {
+		return x.AuhorName
+	}
+	return ""
+}
+
 func (x *Post) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreatedAt
@@ -95,7 +111,6 @@ type CreatePostRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Body          string                 `protobuf:"bytes,2,opt,name=body,proto3" json:"body,omitempty"`
-	CreatedAt     string                 `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -140,13 +155,6 @@ func (x *CreatePostRequest) GetTitle() string {
 func (x *CreatePostRequest) GetBody() string {
 	if x != nil {
 		return x.Body
-	}
-	return ""
-}
-
-func (x *CreatePostRequest) GetCreatedAt() string {
-	if x != nil {
-		return x.CreatedAt
 	}
 	return ""
 }
@@ -607,18 +615,19 @@ var File_blog_post_proto protoreflect.FileDescriptor
 
 const file_blog_post_proto_rawDesc = "" +
 	"\n" +
-	"\x0fblog/post.proto\x12\x04blog\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x83\x01\n" +
+	"\x0fblog/post.proto\x12\x04blog\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbf\x01\n" +
 	"\x04Post\x12\x16\n" +
 	"\x06postId\x18\x01 \x01(\tR\x06postId\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x12\n" +
-	"\x04body\x18\x03 \x01(\tR\x04body\x129\n" +
+	"\x04body\x18\x03 \x01(\tR\x04body\x12\x1b\n" +
+	"\tauthor_id\x18\x04 \x01(\tR\bauthorId\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\\\n" +
+	"auhor_name\x18\x05 \x01(\tR\tauhorName\x129\n" +
+	"\n" +
+	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"=\n" +
 	"\x11CreatePostRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x12\n" +
-	"\x04body\x18\x02 \x01(\tR\x04body\x12\x1d\n" +
-	"\n" +
-	"created_at\x18\x03 \x01(\tR\tcreatedAt\"4\n" +
+	"\x04body\x18\x02 \x01(\tR\x04body\"4\n" +
 	"\x12CreatePostResponse\x12\x1e\n" +
 	"\x04post\x18\x01 \x01(\v2\n" +
 	".blog.PostR\x04post\"(\n" +
