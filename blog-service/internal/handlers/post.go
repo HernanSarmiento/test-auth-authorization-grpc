@@ -9,6 +9,7 @@ import (
 	pb "github.com/HernanSarmiento/test-auth-authorization-grpc/api/proto/gen/blog"
 	"github.com/HernanSarmiento/test-auth-authorization-grpc/blog-service/internal/models"
 	"github.com/HernanSarmiento/test-auth-authorization-grpc/blog-service/internal/repository"
+	"github.com/HernanSarmiento/test-auth-authorization-grpc/common/auth"
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -26,6 +27,14 @@ func NewBlogHandler(repo repository.BlogRepository) *BlogHandler {
 }
 
 func (p *BlogHandler) CreatePost(ctx context.Context, req *pb.CreatePostRequest) (*pb.CreatePostResponse, error) {
+	userID, ok := ctx.Value(auth.UserIDKey).(string)
+	if !ok {
+		return nil, status.Errorf(codes.Unauthenticated, "Error: couldn't get user_id from context")
+	}
+	authorName, ok := ctx.Value(auth.AuthorNameKey).(string)
+	if ok {
+		return nil, status.Errorf(codes.Unauthenticated, "Error: couldn't get author_name from context")
+	}
 
 	if req.GetTitle() == "" || req.GetBody() == "" {
 		log.Printf("Invalid Argument: All fields must be completed")
@@ -33,9 +42,11 @@ func (p *BlogHandler) CreatePost(ctx context.Context, req *pb.CreatePostRequest)
 	}
 	now := time.Now()
 	post := models.Post{
-		Title:     req.Title,
-		Body:      req.Body,
-		CreatedAt: now,
+		Title:      req.Title,
+		Body:       req.Body,
+		AuthorID:   userID,
+		AuthorName: authorName,
+		CreatedAt:  now,
 	}
 	if err := p.repo.CreatePost(ctx, &post); err != nil {
 		log.Printf("Error couldn't create post error %s", err)
