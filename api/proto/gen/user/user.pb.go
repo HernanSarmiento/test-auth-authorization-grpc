@@ -251,7 +251,8 @@ type UserCredentialsResponse struct {
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
 	Role          string                 `protobuf:"bytes,3,opt,name=role,proto3" json:"role,omitempty"`
-	HashPassword  string                 `protobuf:"bytes,4,opt,name=hash_password,json=hashPassword,proto3" json:"hash_password,omitempty"`
+	AuthorName    string                 `protobuf:"bytes,4,opt,name=author_name,json=authorName,proto3" json:"author_name,omitempty"`
+	HashPassword  string                 `protobuf:"bytes,5,opt,name=hash_password,json=hashPassword,proto3" json:"hash_password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -303,6 +304,13 @@ func (x *UserCredentialsResponse) GetEmail() string {
 func (x *UserCredentialsResponse) GetRole() string {
 	if x != nil {
 		return x.Role
+	}
+	return ""
+}
+
+func (x *UserCredentialsResponse) GetAuthorName() string {
+	if x != nil {
+		return x.AuthorName
 	}
 	return ""
 }
@@ -577,12 +585,14 @@ const file_user_user_proto_rawDesc = "" +
 	".user.UserR\x04user\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\"&\n" +
 	"\x0eGetUserRequest\x12\x14\n" +
-	"\x05email\x18\x01 \x01(\tR\x05email\"\x81\x01\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\"\xa2\x01\n" +
 	"\x17UserCredentialsResponse\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x12\n" +
-	"\x04role\x18\x03 \x01(\tR\x04role\x12#\n" +
-	"\rhash_password\x18\x04 \x01(\tR\fhashPassword\"1\n" +
+	"\x04role\x18\x03 \x01(\tR\x04role\x12\x1f\n" +
+	"\vauthor_name\x18\x04 \x01(\tR\n" +
+	"authorName\x12#\n" +
+	"\rhash_password\x18\x05 \x01(\tR\fhashPassword\"1\n" +
 	"\x0fGetUserResponse\x12\x1e\n" +
 	"\x04user\x18\x01 \x01(\v2\n" +
 	".user.UserR\x04user\"\x87\x01\n" +
