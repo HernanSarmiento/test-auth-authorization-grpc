@@ -3,11 +3,7 @@ package handlers
 import (
 	"context"
 	"crypto/ecdsa"
-	"crypto/x509"
-	"encoding/pem"
-	"errors"
 	"fmt"
-	"os"
 	"time"
 
 	authpb "github.com/HernanSarmiento/test-auth-authorization-grpc/api/proto/gen/auth"
@@ -52,6 +48,7 @@ func ComparePasswordHash(hashedPassword []byte, password []byte) error {
 	return nil
 }
 
+<<<<<<< HEAD
 func LoadPrivateKey(path string) (*ecdsa.PrivateKey, error) {
 	pemBytes, err := os.ReadFile(path)
 	if err != nil {
@@ -91,6 +88,9 @@ func LoadPublicKey(path string) (*ecdsa.PublicKey, error) {
 }
 
 func GenerateToken(userID, role string, authorName string, privKey *ecdsa.PrivateKey, exp time.Time) (string, error) {
+=======
+func GenerateToken(userID, role string, privKey *ecdsa.PrivateKey, exp time.Time) (string, error) {
+>>>>>>> e20bafb6104eaf37ac88d0de6bee35135c851f97
 	id := uuid.NewString()
 
 	claims := &auth.MyCustomsClaims{

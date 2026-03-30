@@ -9,6 +9,7 @@ import (
 	"github.com/HernanSarmiento/test-auth-authorization-grpc/auth-service/internal/config"
 	"github.com/HernanSarmiento/test-auth-authorization-grpc/auth-service/internal/handlers"
 	repo "github.com/HernanSarmiento/test-auth-authorization-grpc/auth-service/internal/repository"
+	common "github.com/HernanSarmiento/test-auth-authorization-grpc/common/auth"
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -21,12 +22,12 @@ func main() {
 		log.Fatalf("Error couldn't load env vars %v", err)
 	}
 
-	privKey, err := handlers.LoadPrivateKey(cfg.PrivateKeyPath)
+	privKey, err := common.LoadPrivateKey(cfg.PrivateKeyPath)
 	if err != nil {
 		log.Fatalf("Error while loading private key %v", err)
 	}
 
-	pubKey, err := handlers.LoadPublicKey(cfg.PublicKeyPath)
+	pubKey, err := common.LoadPublicKey(cfg.PublicKeyPath)
 	if err != nil {
 		log.Fatalf("Error while loading public key %v", err)
 	}
