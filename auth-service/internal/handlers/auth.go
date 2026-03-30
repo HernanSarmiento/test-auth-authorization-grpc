@@ -48,55 +48,13 @@ func ComparePasswordHash(hashedPassword []byte, password []byte) error {
 	return nil
 }
 
-<<<<<<< HEAD
-func LoadPrivateKey(path string) (*ecdsa.PrivateKey, error) {
-	pemBytes, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("Unable to read private key: %w", err)
-	}
-	key, err := jwt.ParseECPrivateKeyFromPEM(pemBytes)
-	if err != nil {
-		return nil, fmt.Errorf("Error occur while parsing private key %w", err)
-	}
-	return key, nil
-}
-
-func LoadPublicKey(path string) (*ecdsa.PublicKey, error) {
-	// 1. Leer el archivo físico (.pem)
-	asn1Data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("error leyendo llave pública: %w", err)
-	}
-
-	// 2. Decodificar el bloque PEM
-	block, _ := pem.Decode(asn1Data)
-	if block == nil || block.Type != "PUBLIC KEY" {
-		return nil, errors.New("formato de llave pública inválido")
-	}
-	// 3. Parsear el contenido PKIX (estándar para llaves públicas)
-	pub, err := x509.ParsePKIXPublicKey(block.Bytes)
-	if err != nil {
-		return nil, fmt.Errorf("error parseando llave pública: %w", err)
-	}
-	// 4. Asegurarnos de que sea una llave ECDSA (la que elegimos para el proyecto)
-	ecdsaPub, ok := pub.(*ecdsa.PublicKey)
-	if !ok {
-		return nil, errors.New("la llave no es de tipo ECDSA")
-	}
-
-	return ecdsaPub, nil
-}
-
-func GenerateToken(userID, role string, authorName string, privKey *ecdsa.PrivateKey, exp time.Time) (string, error) {
-=======
-func GenerateToken(userID, role string, privKey *ecdsa.PrivateKey, exp time.Time) (string, error) {
->>>>>>> e20bafb6104eaf37ac88d0de6bee35135c851f97
+func GenerateToken(userID, role string, AuthorName string, privKey *ecdsa.PrivateKey, exp time.Time) (string, error) {
 	id := uuid.NewString()
 
 	claims := &auth.MyCustomsClaims{
 		UserID:     userID,
 		Role:       role,
-		AuthorName: authorName,
+		AuthorName: AuthorName,
 		RegisteredClaims: &jwt.RegisteredClaims{
 			ID:        id,
 			ExpiresAt: jwt.NewNumericDate(exp),
