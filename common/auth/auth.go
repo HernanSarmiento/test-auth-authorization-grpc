@@ -3,7 +3,11 @@ package auth
 import (
 	"context"
 	"crypto/ecdsa"
+	"crypto/x509"
+	"encoding/pem"
+	"errors"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -23,6 +27,44 @@ type MyCustomsClaims struct {
 	UserID string `json:"user_id"`
 	Role   string `json:"role"`
 	*jwt.RegisteredClaims
+}
+
+func LoadPrivateKey(path string) (*ecdsa.PrivateKey, error) {
+	pemBytes, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("Unable to read private key: %w", err)
+	}
+	key, err := jwt.ParseECPrivateKeyFromPEM(pemBytes)
+	if err != nil {
+		return nil, fmt.Errorf("Error occur while parsing private key %w", err)
+	}
+	return key, nil
+}
+
+func LoadPublicKey(path string) (*ecdsa.PublicKey, error) {
+	// 1. Leer el archivo físico (.pem)
+	asn1Data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("error leyendo llave pública: %w", err)
+	}
+
+	// 2. Decodificar el bloque PEM
+	block, _ := pem.Decode(asn1Data)
+	if block == nil || block.Type != "PUBLIC KEY" {
+		return nil, errors.New("formato de llave pública inválido")
+	}
+	// 3. Parsear el contenido PKIX (estándar para llaves públicas)
+	pub, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		return nil, fmt.Errorf("error parseando llave pública: %w", err)
+	}
+	// 4. Asegurarnos de que sea una llave ECDSA (la que elegimos para el proyecto)
+	ecdsaPub, ok := pub.(*ecdsa.PublicKey)
+	if !ok {
+		return nil, errors.New("la llave no es de tipo ECDSA")
+	}
+
+	return ecdsaPub, nil
 }
 
 func VerifyToken(ctx context.Context, pubKey *ecdsa.PublicKey) (*MyCustomsClaims, error) {
