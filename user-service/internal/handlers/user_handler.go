@@ -79,6 +79,7 @@ func (u *UserHandler) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.
 	return &pb.UserCredentialsResponse{
 		UserId:       userFound.UserID.String(),
 		Email:        userFound.Email,
+		AuthorName:   userFound.Username,
 		HashPassword: userFound.Password,
 		Role:         string(userFound.Role),
 	}, nil
