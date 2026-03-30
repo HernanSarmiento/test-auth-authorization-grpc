@@ -10,9 +10,11 @@ type Config struct {
 	DB_NAME_BLOG     string `mapstructure:"DB_NAME_BLOG"`
 	DB_SSLMODE       string `mapstructure:"DB_SSLMODE"`
 	BLOG_SERVER_PORT string `mapstructure:"BLOG_SERVER_PORT"`
+	PrivateKeyPath   string `mapstructure:"PRIVATE_KEY_PATH"`
+	PublicKeyPath    string `mapstructure:"PUBLIC_KEY_PATH"`
 }
 
-func LoadConfig() (cfg *Config, err error) {
+func LoadConfig() (cfg Config, err error) {
 	viper.SetConfigFile(".env")
 
 	viper.AddConfigPath(".")
