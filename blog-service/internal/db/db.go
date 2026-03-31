@@ -26,7 +26,7 @@ func InitDB(cfg config.Config) *gorm.DB {
 	}
 	err = db.AutoMigrate(&models.Post{})
 	if err != nil {
-		log.Fatalf("Internal: couldn't migrate user model error %v", err)
+		log.Fatalf("Internal: couldn't migrate post model error %v", err)
 	}
 
 	DB = db
