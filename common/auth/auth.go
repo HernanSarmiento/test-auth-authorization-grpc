@@ -87,7 +87,10 @@ func VerifyToken(ctx context.Context, pubKey *ecdsa.PublicKey) (*MyCustomsClaims
 		}
 		return pubKey, nil
 	})
-
+	if err != nil {
+		fmt.Printf("JWT Error: %v\n", err)
+		return nil, err
+	}
 	if err != nil || !token.Valid {
 		return nil, status.Error(codes.Unauthenticated, "Error: invalid token")
 	}
