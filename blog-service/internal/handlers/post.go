@@ -32,7 +32,7 @@ func (p *BlogHandler) CreatePost(ctx context.Context, req *pb.CreatePostRequest)
 		return nil, status.Errorf(codes.Unauthenticated, "Error: couldn't get user_id from context")
 	}
 	authorName, ok := ctx.Value(auth.AuthorNameKey).(string)
-	if ok {
+	if !ok {
 		return nil, status.Errorf(codes.Unauthenticated, "Error: couldn't get author_name from context")
 	}
 
@@ -58,6 +58,8 @@ func (p *BlogHandler) CreatePost(ctx context.Context, req *pb.CreatePostRequest)
 			PostId:    post.PostID.String(),
 			Title:     post.Title,
 			Body:      post.Body,
+			AuthorId:  post.AuthorID,
+			AuhorName: post.AuthorName,
 			CreatedAt: timestamppb.New(now),
 		},
 	}, nil
