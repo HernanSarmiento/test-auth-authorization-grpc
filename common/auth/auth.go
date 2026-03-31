@@ -78,7 +78,7 @@ func VerifyToken(ctx context.Context, pubKey *ecdsa.PublicKey) (*MyCustomsClaims
 		return nil, status.Error(codes.Unauthenticated, "Error: missing authorization header")
 	}
 
-	tokenString := strings.TrimPrefix(values[0], "bearer ")
+	tokenString := strings.TrimPrefix(values[0], "Bearer ")
 	claims := &MyCustomsClaims{}
 
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
